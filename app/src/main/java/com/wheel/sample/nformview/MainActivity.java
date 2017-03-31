@@ -9,9 +9,9 @@ import com.wheel.nebula.FormView;
 public class MainActivity extends AppCompatActivity {
 
     String[][] mData = new String[][]{{"1asd", "1asd", "1asd", "1asd"}
-            ,{"2asd", "2asd", "2asd", "2asd"}
-            ,{"3asd", "3asd", "3asd", "3asd"}
-            ,{"4asd", "4asd", "4asd", "4asd"}};
+            ,{"2ysd", "2asd", "2asd", "北京市"}
+            ,{"3gsd", "3asd", "3fsd", "3额sd"}
+            ,{"4ksd", "4jsd", "4asd", "4asd"}};
     FormView mFormView;
     BaseAdapter mAdapter;
     @Override

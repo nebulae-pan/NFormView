@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import java.util.ArrayList;
+
 /**
  * Created by pan on 2017/3/28.
  */
@@ -15,6 +17,10 @@ public class FormView extends View {
     private Paint mPaint;
 
     private BaseAdapter mAdapter;
+
+    private ArrayList<Float> mColumnWidth;
+
+    private ArrayList<Float> mRowHeight;
 
     public FormView(Context context) {
         this(context, null);
@@ -29,6 +35,8 @@ public class FormView extends View {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(55);
+        mColumnWidth = new ArrayList<>();
+        mRowHeight = new ArrayList<>();
     }
 
     public void setAdapter(BaseAdapter adapter) {
@@ -70,7 +78,8 @@ public class FormView extends View {
         float formHeight = 0;
         //calculate form height
         for(int i = 0; i < mAdapter.getRowCount();i++) {
-            formHeight += calculateRowCellMaxHeight(i);
+            mRowHeight.add(i, calculateRowCellMaxHeight(i));
+            formHeight += mRowHeight.get(i);
         }
         float formWidth = 0;
         float lineWidth;
@@ -78,6 +87,7 @@ public class FormView extends View {
         //draw column line
         for(int i = 0; i < mAdapter.getColumnCount(); i++) {
             lineWidth = calculateColumnCellMaxWidth(i);
+            mColumnWidth.add(i,lineWidth);
             lineStartX += lineWidth;
             canvas.drawLine(lineStartX, 0, lineStartX, formHeight, mPaint);
         }
@@ -87,10 +97,11 @@ public class FormView extends View {
         for(int i = 0; i < mAdapter.getRowCount(); i++) {
             for(int j = 0; j < mAdapter.getColumnCount(); j++) {
                 canvas.drawText(mAdapter.getCellContent(i, j), textX, textY, mPaint);
-                textX += calculateColumnCellMaxWidth(j);
+                textX += mColumnWidth.get(j);
             }
+            canvas.drawLine(0, textY, lineStartX, textY, mPaint);
             textX = 0;
-            textY += calculateRowCellMaxHeight(i);
+            textY += mRowHeight.get(i);
         }
 
     }
