@@ -5,6 +5,12 @@ package com.wheel.nebula;
  */
 
 abstract public class BaseAdapter {
+    protected String[] mTitle;
+
+    public void setTitle(String[] title) {
+        this.mTitle = title;
+    }
+
     abstract public int getRowCount();
 
     abstract public int getColumnCount();

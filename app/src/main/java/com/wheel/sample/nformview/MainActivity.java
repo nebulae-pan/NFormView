@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         mFormView = (FormView) findViewById(R.id.form_view);
 
         mAdapter = new MyAdapter(mData);
+        mAdapter.setTitle(new String[]{"1", "2", "3", "4"});
         mFormView.setAdapter(mAdapter);
     }
 

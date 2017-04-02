@@ -77,32 +77,54 @@ public class FormView extends View {
         }
         float formHeight = 0;
         //calculate form height
-        for(int i = 0; i < mAdapter.getRowCount();i++) {
+        for (int i = 0; i <= mAdapter.getRowCount(); i++) {
             mRowHeight.add(i, calculateRowCellMaxHeight(i));
             formHeight += mRowHeight.get(i);
         }
-        float formWidth = 0;
+        float formWidth = drawColumnLineAndGetWidth(canvas, formHeight);
+        drawContentAndRowLine(canvas, formWidth);
+
+    }
+
+    private float drawColumnLineAndGetWidth(Canvas canvas, float formHeight) {
         float lineWidth;
         float lineStartX = 0;
         //draw column line
-        for(int i = 0; i < mAdapter.getColumnCount(); i++) {
+        canvas.drawLine(lineStartX, 0, lineStartX, formHeight, mPaint);
+        for (int i = 0; i < mAdapter.getColumnCount(); i++) {
             lineWidth = calculateColumnCellMaxWidth(i);
-            mColumnWidth.add(i,lineWidth);
+            mColumnWidth.add(i, lineWidth);
             lineStartX += lineWidth;
             canvas.drawLine(lineStartX, 0, lineStartX, formHeight, mPaint);
         }
-        float textX = 0;
-        float textY = mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top;
+        return lineStartX;
+    }
 
-        for(int i = 0; i < mAdapter.getRowCount(); i++) {
-            for(int j = 0; j < mAdapter.getColumnCount(); j++) {
+    private void drawContentAndRowLine(Canvas canvas, float formWidth) {
+        float textX = 0;
+        float textY = mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().descent - mPaint.getFontMetrics().top;
+        float lenY = 0;
+
+        //draw content and row line
+        canvas.drawLine(0, lenY, formWidth, lenY, mPaint);
+        for(int i = 0; i < mAdapter.getColumnCount(); i++) {
+            canvas.drawText(mAdapter.mTitle[i], textX, textY, mPaint);
+            textX += mColumnWidth.get(i);
+        }
+        textX = 0;
+        textY += mRowHeight.get(0);
+        lenY += mRowHeight.get(0);
+        canvas.drawLine(0, lenY, formWidth, lenY, mPaint);
+
+        for (int i = 0; i < mAdapter.getRowCount(); i++) {
+            for (int j = 0; j < mAdapter.getColumnCount(); j++) {
                 canvas.drawText(mAdapter.getCellContent(i, j), textX, textY, mPaint);
                 textX += mColumnWidth.get(j);
             }
-            canvas.drawLine(0, textY, lineStartX, textY, mPaint);
             textX = 0;
             textY += mRowHeight.get(i);
+            lenY += mRowHeight.get(i);
+            canvas.drawLine(0, lenY, formWidth, lenY, mPaint);
         }
-
     }
 }
