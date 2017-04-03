@@ -1,4 +1,4 @@
-package com.wheel.sample.nformview;
+package com.nebula.wheel;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.wheel.sample.nformview", appContext.getPackageName());
+        assertEquals("com.wheel.formview.test", appContext.getPackageName());
     }
 }

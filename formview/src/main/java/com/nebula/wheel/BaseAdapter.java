@@ -1,4 +1,4 @@
-package com.wheel.nebula;
+package com.nebula.wheel;
 
 /**
  * Created by pan on 2017/3/28.

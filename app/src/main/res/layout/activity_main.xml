@@ -6,9 +6,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="15dp"
-    tools:context="com.wheel.sample.nformview.MainActivity">
+    tools:context="com.nebula.sample.nformview.MainActivity">
 
-    <com.wheel.nebula.FormView
+    <com.nebula.wheel.FormView
         android:id="@+id/form_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

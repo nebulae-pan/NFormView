@@ -1,4 +1,4 @@
-package com.wheel.sample.nformview;
+package com.nebula.sample.nformview;
 
 import org.junit.Test;
 

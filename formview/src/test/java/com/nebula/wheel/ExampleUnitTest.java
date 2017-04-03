@@ -1,4 +1,4 @@
-package com.wheel.nebula;
+package com.nebula.wheel;
 
 import org.junit.Test;
 
