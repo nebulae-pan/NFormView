@@ -12,22 +12,37 @@ import com.nebula.utils.DensityUtil;
 
 /**
  * Created by pan on 2017/3/28.
+ * View can draw Form
  */
-
 public class FormView extends View {
     private Paint mPaint;
 
+    /**
+     * Adapter
+     */
     private BaseAdapter mAdapter;
 
+    /**
+     * line's width and height
+     */
     private float[] mColumnWidth;
     private float[] mRowHeight;
 
+    /**
+     * about scroll
+     */
     private float pressX;
     private float pressY;
     private float offsetX;
     private float offsetY;
 
     private float padding;
+
+    /**
+     * formSize
+     */
+    private float mFormHeight;
+    private float mFormWidth;
 
     public FormView(Context context) {
         this(context, null);
@@ -50,6 +65,7 @@ public class FormView extends View {
         this.mAdapter = adapter;
         mRowHeight = new float[mAdapter.getRowCount() + 1];
         mColumnWidth = new float[mAdapter.getColumnCount()];
+        calculateFormSize();
     }
 
     @Override
@@ -58,27 +74,29 @@ public class FormView extends View {
         if (mAdapter == null) {
             return;
         }
-        float formHeight = 0;
-        float formWidth = 0;
+
+        drawBeginColumn(canvas, mFormHeight);
+        canvas.save();
+        canvas.clipRect(mColumnWidth[0], 0, mFormWidth, mRowHeight[0]);
+        canvas.translate(offsetX, 0);
+        drawFormTitle(canvas, mFormWidth);
+        canvas.restore();
+        canvas.save();
+        canvas.clipRect(mColumnWidth[0], mRowHeight[0], mFormWidth, mFormHeight);
+        canvas.translate(offsetX, offsetY);
+        drawContent(canvas, mFormHeight, mFormWidth);
+    }
+
+    private void calculateFormSize() {
         //calculate form size
         for (int i = 0; i <= mAdapter.getRowCount(); i++) {
             mRowHeight[i] = calculateRowCellMaxHeight(i) + 2 * padding;
-            formHeight += mRowHeight[i];
+            mFormHeight += mRowHeight[i];
         }
         for (int i = 0; i < mAdapter.getColumnCount(); i++) {
             mColumnWidth[i] = calculateColumnCellMaxWidth(i) + 2 * padding;
-            formWidth += mColumnWidth[i];
+            mFormWidth += mColumnWidth[i];
         }
-        drawBeginColumn(canvas, formHeight);
-        canvas.save();
-        canvas.clipRect(mColumnWidth[0], 0, formWidth, mRowHeight[0]);
-        canvas.translate(offsetX, 0);
-        drawFormTitle(canvas, formWidth);
-        canvas.restore();
-        canvas.save();
-        canvas.clipRect(mColumnWidth[0], mRowHeight[0], formWidth, formHeight);
-        canvas.translate(offsetX, offsetY);
-        drawContent(canvas, formHeight, formWidth);
     }
 
     private void drawBeginColumn(Canvas canvas, float formHeight) {
@@ -185,8 +203,12 @@ public class FormView extends View {
             case MotionEvent.ACTION_MOVE:
                 offsetX = event.getX() - pressX;
                 offsetY = event.getY() - pressY;
-                offsetX = offsetX > 0 ? offsetX = 0 : offsetX;
-                offsetY = offsetY > 0 ? offsetY = 0 : offsetY;
+                offsetX = offsetX > 0 ? 0 : offsetX;
+                offsetY = offsetY > 0 ? 0 : offsetY;
+                float limitX = -mFormWidth + getWidth();
+                float limitY = -mFormHeight + getHeight();
+                offsetX = offsetX < limitX ? limitX : offsetX;
+                offsetY = offsetY < limitY ? limitY : offsetY;
                 invalidate();
                 break;
             default:
