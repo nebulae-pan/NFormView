@@ -44,6 +44,8 @@ public class FormView extends View {
     private float mFormHeight;
     private float mFormWidth;
 
+    private FormParam mFormParam;
+
     public FormView(Context context) {
         this(context, null);
     }
@@ -59,6 +61,7 @@ public class FormView extends View {
         setLongClickable(true);
         mPaint.setTextSize(80);
         padding = DensityUtil.dip2Px(context, 5);
+        mFormParam = new FormParam();
     }
 
     public void setAdapter(BaseAdapter adapter) {
@@ -66,6 +69,7 @@ public class FormView extends View {
         mRowHeight = new float[mAdapter.getRowCount() + 1];
         mColumnWidth = new float[mAdapter.getColumnCount()];
         calculateFormSize();
+        mFormParam.initCells(adapter);
     }
 
     @Override
