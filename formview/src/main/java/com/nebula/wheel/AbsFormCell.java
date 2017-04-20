@@ -5,7 +5,24 @@ package com.nebula.wheel;
  */
 
 abstract public class AbsFormCell {
-    String mContent;
+    protected float mStartX;
+    protected float mStartY;
+    protected float mHeight;
+    protected float mWidth;
 
+    public void reset() {
+        mStartX = 0;
+        mStartY = 0;
+        mHeight = 0;
+        mWidth = 0;
+    }
+
+    public void setParams(float startX, float startY, float height, float width) {
+        this.mStartX = startX;
+        this.mStartY = startY;
+        this.mHeight = height;
+        this.mWidth = width;
+    }
     abstract public void drawCell();
+
 }

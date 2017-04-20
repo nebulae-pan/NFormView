@@ -5,7 +5,7 @@ package com.nebula.wheel;
  */
 
 class FormParam {
-    AbsFormCell[][] mCells;
+    private AbsFormCell[][] mCells;
 
     FormParam() {
 

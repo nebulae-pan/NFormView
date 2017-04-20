@@ -3,7 +3,9 @@ package com.nebula.sample.nformview;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.nebula.wheel.AbsFormCell;
 import com.nebula.wheel.BaseAdapter;
+import com.nebula.wheel.FormCell;
 import com.nebula.wheel.FormView;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private static class MyAdapter extends BaseAdapter {
+    private static class MyAdapter extends BaseAdapter<FormCell> {
         String[][] mData;
 
         public MyAdapter(String[][] data) {
@@ -51,6 +53,11 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getColumnCount() {
             return mData[0].length;
+        }
+
+        @Override
+        public void bindCell(FormCell cell, int rowNumber, int columnNumber) {
+            cell.setContent(mData[rowNumber][columnNumber]);
         }
 
         @Override

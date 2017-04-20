@@ -5,6 +5,12 @@ package com.nebula.wheel;
  */
 
 public class FormCell extends AbsFormCell{
+    private String mContent;
+
+    public void setContent(String content) {
+        this.mContent = content;
+    }
+
     @Override
     public void drawCell() {
 
