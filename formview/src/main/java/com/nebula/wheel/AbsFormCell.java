@@ -23,6 +23,11 @@ abstract public class AbsFormCell {
         this.mHeight = height;
         this.mWidth = width;
     }
+
+
     abstract public void drawCell();
 
+    abstract public float getCellHeight();
+
+    abstract public float getCellWidth();
 }

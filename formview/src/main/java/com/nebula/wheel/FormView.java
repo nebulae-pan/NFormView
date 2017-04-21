@@ -23,12 +23,6 @@ public class FormView extends View {
     private BaseAdapter mAdapter;
 
     /**
-     * line's width and height
-     */
-    private float[] mColumnWidth;
-    private float[] mRowHeight;
-
-    /**
      * about scroll
      */
     private float pressX;
@@ -37,12 +31,6 @@ public class FormView extends View {
     private float offsetY;
 
     private float padding;
-
-    /**
-     * formSize
-     */
-    private float mFormHeight;
-    private float mFormWidth;
 
     private FormParam mFormParam;
 
@@ -58,17 +46,15 @@ public class FormView extends View {
         super(context, attrs, defStyleAttr);
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        setLongClickable(true);
         mPaint.setTextSize(80);
+
+        setLongClickable(true);
         padding = DensityUtil.dip2Px(context, 5);
         mFormParam = new FormParam();
     }
 
     public void setAdapter(BaseAdapter adapter) {
         this.mAdapter = adapter;
-        mRowHeight = new float[mAdapter.getRowCount() + 1];
-        mColumnWidth = new float[mAdapter.getColumnCount()];
-        calculateFormSize();
         mFormParam.initCells(adapter);
     }
 
@@ -91,17 +77,6 @@ public class FormView extends View {
         drawContent(canvas, mFormHeight, mFormWidth);
     }
 
-    private void calculateFormSize() {
-        //calculate form size
-        for (int i = 0; i <= mAdapter.getRowCount(); i++) {
-            mRowHeight[i] = calculateRowCellMaxHeight(i) + 2 * padding;
-            mFormHeight += mRowHeight[i];
-        }
-        for (int i = 0; i < mAdapter.getColumnCount(); i++) {
-            mColumnWidth[i] = calculateColumnCellMaxWidth(i) + 2 * padding;
-            mFormWidth += mColumnWidth[i];
-        }
-    }
 
     private void drawBeginColumn(Canvas canvas, float formHeight) {
         float beginColumnWidth = mColumnWidth[0];
@@ -175,27 +150,6 @@ public class FormView extends View {
         }
     }
 
-    private float calculateColumnCellMaxWidth(int columnNumber) {
-        float maxWidth = 0;
-        for (int j = 0; j < mAdapter.getRowCount(); j++) {
-            float cellWidth = mPaint.measureText(mAdapter.getCellContent(j, columnNumber));
-            if (cellWidth > maxWidth) {
-                maxWidth = cellWidth;
-            }
-        }
-        return maxWidth;
-    }
-
-    private float calculateRowCellMaxHeight(int rowNumber) {
-        float maxHeight = 0;
-        for (int i = 0; i < mAdapter.getColumnCount(); i++) {
-            float cellHeight = (mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top);
-            if (cellHeight > maxHeight) {
-                maxHeight = cellHeight;
-            }
-        }
-        return maxHeight;
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
