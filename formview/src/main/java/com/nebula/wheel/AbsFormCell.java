@@ -1,5 +1,10 @@
 package com.nebula.wheel;
 
+import android.content.Context;
+import android.graphics.Canvas;
+
+import com.nebula.utils.DensityUtil;
+
 /**
  * Created by pan on 2017/4/17.
  */
@@ -10,6 +15,15 @@ abstract public class AbsFormCell {
     protected float mHeight;
     protected float mWidth;
 
+    protected float padding;
+
+    protected Context mContext;
+
+    public AbsFormCell(Context context) {
+        this.mContext = context;
+        padding = DensityUtil.dip2Px(context, 2);
+    }
+
     public void reset() {
         mStartX = 0;
         mStartY = 0;
@@ -17,17 +31,35 @@ abstract public class AbsFormCell {
         mWidth = 0;
     }
 
-    public void setParams(float startX, float startY, float height, float width) {
+    public void setParams(float startX, float startY) {
         this.mStartX = startX;
         this.mStartY = startY;
-        this.mHeight = height;
-        this.mWidth = width;
     }
 
+    void drawCell(Canvas canvas) {
+        drawCellFrame(canvas);
+        draw(canvas);
+    }
 
-    abstract public void drawCell();
+    private void drawCellFrame(Canvas canvas) {
 
-    abstract public float getCellHeight();
+    }
 
-    abstract public float getCellWidth();
+    abstract public void draw(Canvas canvas);
+
+    public float calculateCellHeight() {
+        return 0;
+    }
+
+    public float calculateCellWidth() {
+        return 0;
+    }
+
+    public float getCellHeight() {
+        return mHeight;
+    }
+
+    public float getCellWidth(){
+        return mWidth;
+    }
 }

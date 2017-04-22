@@ -11,8 +11,8 @@ class FormParam {
     /**
      * line's width and height
      */
-    private float[] mColumnWidth;
-    private float[] mRowHeight;
+    float[] mColumnWidth;
+    float[] mRowHeight;
     /**
      * formSize
      */
@@ -27,23 +27,40 @@ class FormParam {
     }
 
     void initCells(BaseAdapter adapter) {
-        isInitialized = true;
         this.mAdapter = adapter;
+        int rowCount = mAdapter.getRowCount();
+        int colCount = mAdapter.getColumnCount();
+        mCells = new AbsFormCell[rowCount][colCount];
+        for (int i = 0; i < rowCount; i++) {
+            for (int j = 0; j < colCount; j++) {
+                if (mCells[i][j] == null) {
+                    mCells[i][j] = mAdapter.createCell(i, j);
+                }
+            }
+        }
+    }
+
+    void initParams() {
+        isInitialized = true;
         int rowCount = mAdapter.getRowCount();
         int colCount = mAdapter.getColumnCount();
         mRowHeight = new float[rowCount];
         mColumnWidth = new float[colCount];
-        mCells = new AbsFormCell[rowCount][colCount];
+        calculateFormSize();
+        float cellStartX = 0;
+        float cellStartY = 0;
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
-                mCells[i][j] = mAdapter.createCell(i, j);
+                mCells[i][j].setParams(cellStartX, cellStartY);
+                cellStartX += mColumnWidth[j];
             }
+            cellStartX = 0;
+            cellStartY += mRowHeight[i];
         }
-        calculateFormSize();
     }
 
     AbsFormCell getCellByPosition(int rowNumber, int columnNumber) {
-        checkInit();
+//        checkInit();
         return mCells[rowNumber][columnNumber];
     }
 
@@ -57,13 +74,13 @@ class FormParam {
 
     private void checkInit() {
         if (!isInitialized) {
-            throw new RuntimeException("access parameters failed, did you forget call the \'initCells?\'");
+            throw new RuntimeException("access parameters failed, did you forget call the \'initParams?\'");
         }
     }
 
     private void calculateFormSize() {
         //calculate form size
-        for (int i = 0; i <= mAdapter.getRowCount(); i++) {
+        for (int i = 0; i < mAdapter.getRowCount(); i++) {
             mRowHeight[i] = calculateRowCellMaxHeight(i);
             mFormHeight += mRowHeight[i];
         }
@@ -76,7 +93,7 @@ class FormParam {
     private float calculateColumnCellMaxWidth(int columnNumber) {
         float maxWidth = 0;
         for (int i = 0; i < mAdapter.getRowCount(); i++) {
-            float cellWidth = mCells[i][columnNumber].getCellWidth();
+            float cellWidth = mCells[i][columnNumber].calculateCellWidth();
             if (cellWidth > maxWidth) {
                 maxWidth = cellWidth;
             }
@@ -87,10 +104,8 @@ class FormParam {
     private float calculateRowCellMaxHeight(int rowNumber) {
         float maxHeight = 0;
         for (int j = 0; j < mAdapter.getColumnCount(); j++) {
-            float cellHeight = mCells[rowNumber][j].getCellHeight();
-            if (cellHeight > maxHeight) {
-                maxHeight = cellHeight;
-            }
+            float cellHeight = mCells[rowNumber][j].calculateCellHeight();
+            maxHeight = cellHeight > maxHeight ? cellHeight : maxHeight;
         }
         return maxHeight;
     }

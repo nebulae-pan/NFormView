@@ -1,9 +1,9 @@
 package com.nebula.sample.nformview;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.nebula.wheel.AbsFormCell;
 import com.nebula.wheel.BaseAdapter;
 import com.nebula.wheel.FormCell;
 import com.nebula.wheel.FormView;
@@ -32,16 +32,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mFormView = (FormView) findViewById(R.id.form_view);
 
-        mAdapter = new MyAdapter(mData);
-        mAdapter.setTitle(new String[]{"1", "2", "3", "4", "5", "6", "7", "8"});
+        mAdapter = new MyAdapter(this, mData);
         mFormView.setAdapter(mAdapter);
     }
 
 
     private static class MyAdapter extends BaseAdapter<FormCell> {
         String[][] mData;
+        Context mContext;
 
-        public MyAdapter(String[][] data) {
+        public MyAdapter(Context context, String[][] data) {
+            this.mContext = context;
             this.mData = data;
         }
 
@@ -56,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void bindCell(FormCell cell, int rowNumber, int columnNumber) {
-            cell.setContent(mData[rowNumber][columnNumber]);
+        public FormCell createCell(int rowNumber, int colNumber) {
+            return new FormCell(mContext);
         }
 
         @Override
-        public String getCellContent(int rowNumber, int colNumber) {
-            return mData[rowNumber][colNumber];
+        public void bindCell(FormCell cell, int rowNumber, int columnNumber) {
+            cell.setContent(mData[rowNumber][columnNumber]);
         }
 
     }
