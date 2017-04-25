@@ -2,7 +2,7 @@ package com.nebula.wheel;
 
 import android.content.Context;
 import android.graphics.Canvas;
-
+import android.graphics.Paint;
 import com.nebula.utils.DensityUtil;
 
 /**
@@ -15,14 +15,22 @@ abstract public class AbsFormCell {
     protected float mHeight;
     protected float mWidth;
 
-    protected float padding;
+    protected float mPadding;
+
+    private int mRow;
+    private int mCol;
 
     protected Context mContext;
 
+    private Paint mLinePaint;
+
     public AbsFormCell(Context context) {
         this.mContext = context;
-        padding = DensityUtil.dip2Px(context, 2);
+        mPadding = DensityUtil.dip2Px(context, 5);
+        mLinePaint = new Paint();
+//        mLinePaint.setStrokeWidth(DensityUtil.dip2Px(context, 1));
     }
+
 
     public void reset() {
         mStartX = 0;
@@ -31,9 +39,16 @@ abstract public class AbsFormCell {
         mWidth = 0;
     }
 
-    public void setParams(float startX, float startY) {
+    public void setParams(float startX, float startY, float height, float width) {
         this.mStartX = startX;
         this.mStartY = startY;
+        this.mHeight = height;
+        this.mWidth = width;
+    }
+
+    void setPosition(int row, int col) {
+        this.mRow = row;
+        this.mCol = col;
     }
 
     void drawCell(Canvas canvas) {
@@ -41,8 +56,19 @@ abstract public class AbsFormCell {
         draw(canvas);
     }
 
-    private void drawCellFrame(Canvas canvas) {
+    float getLineWidth() {
+        return mLinePaint.getStrokeWidth();
+    }
 
+    private void drawCellFrame(Canvas canvas) {
+        if (mRow == 0) {
+            canvas.drawLine(mStartX, mStartY, mStartX + mWidth, mStartY, mLinePaint);
+        }
+        if (mCol == 0) {
+            canvas.drawLine(mStartX, mStartY, mStartX, mStartY + mHeight, mLinePaint);
+        }
+        canvas.drawLine(mStartX + mWidth, mStartY, mStartX + mWidth, mStartY + mHeight, mLinePaint);
+        canvas.drawLine(mStartX, mStartY + mHeight, mStartX + mWidth, mStartY + mHeight, mLinePaint);
     }
 
     abstract public void draw(Canvas canvas);
@@ -59,7 +85,7 @@ abstract public class AbsFormCell {
         return mHeight;
     }
 
-    public float getCellWidth(){
+    public float getCellWidth() {
         return mWidth;
     }
 }

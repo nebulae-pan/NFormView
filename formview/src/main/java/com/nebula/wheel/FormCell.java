@@ -3,7 +3,6 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.util.Log;
 
 import com.nebula.utils.DensityUtil;
 
@@ -20,7 +19,7 @@ public class FormCell extends AbsFormCell {
         super(context);
         this.mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(DensityUtil.dip2Px(context, 22));
+        mPaint.setTextSize(DensityUtil.dip2Px(context, 25));
     }
 
     public void setContent(String content) {
@@ -29,20 +28,19 @@ public class FormCell extends AbsFormCell {
 
     @Override
     public void draw(Canvas canvas) {
-        Log.e("asd", mStartX + ":" + mStartY);
-        float contentX = mStartX + padding;
-        float contentY = mStartY + mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top - mPaint.getFontMetrics().descent + padding;
+        float contentX = mStartX + mPadding;
+        float contentY = mStartY + mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top - mPaint.getFontMetrics().descent + mPadding;
         canvas.drawText(mContent, contentX, contentY, mPaint);
     }
 
 
     @Override
     public float calculateCellWidth() {
-        return mPaint.measureText(mContent) + 2 * padding;
+        return mPaint.measureText(mContent) + 2 * mPadding;
     }
 
     @Override
     public float calculateCellHeight() {
-        return mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + 2 * padding;
+        return mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + 2 * mPadding;
     }
 }

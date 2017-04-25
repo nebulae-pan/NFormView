@@ -2,10 +2,8 @@ package com.nebula.wheel;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,8 +12,6 @@ import android.view.View;
  * View can draw Form
  */
 public class FormView extends View {
-    private Paint mLinePaint;
-
     /**
      * Adapter
      */
@@ -41,8 +37,6 @@ public class FormView extends View {
 
     public FormView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mLinePaint = new Paint();
-        mLinePaint.setAntiAlias(true);
 
         setLongClickable(true);
         mFormParam = new FormParam();
@@ -90,87 +84,51 @@ public class FormView extends View {
             return;
         }
         drawBeginColumn(canvas);
-//        drawFormTitle(canvas);
-//        drawContent(canvas);
+        drawFormTitle(canvas);
+        drawContent(canvas);
     }
 
 
     private void drawBeginColumn(Canvas canvas) {
         float beginColumnWidth = mFormParam.mColumnWidth[0];
         float beginRowHeight = mFormParam.mRowHeight[0];
-        float lenY = 0;
-        canvas.drawLine(0, 0, 0, mFormParam.mRowHeight[0], mLinePaint);
-        canvas.drawLine(0, lenY, beginColumnWidth, lenY, mLinePaint);
         AbsFormCell cell = mFormParam.getCellByPosition(0, 0);
-        cell.draw(canvas);
+        cell.drawCell(canvas);
 
         canvas.save();
-        canvas.clipRect(0, beginRowHeight, beginColumnWidth, mFormParam.getFormHeight());
+        canvas.clipRect(0, beginRowHeight, beginColumnWidth + 1, mFormParam.getFormHeight());
         canvas.translate(0, offsetY);
-
-        canvas.drawLine(0, beginRowHeight, 0, mFormParam.getFormHeight(), mLinePaint);
-        canvas.drawLine(0, beginRowHeight, beginColumnWidth, beginRowHeight, mLinePaint);
-        lenY += beginRowHeight;
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
             cell = mFormParam.getCellByPosition(i, 0);
-            cell.draw(canvas);
-            lenY += beginRowHeight;
-            canvas.drawLine(0, lenY, beginColumnWidth, lenY, mLinePaint);
+            cell.drawCell(canvas);
         }
         canvas.restore();
     }
 
-//    private void drawFormTitle(Canvas canvas, float formWidth) {
-//        canvas.save();
-//        canvas.clipRect(mColumnWidth[0], 0, mFormWidth, mRowHeight[0]);
-//        canvas.translate(offsetX, 0);
-//        float lenX = mColumnWidth[0];
-//        float paddingTop = padding;
-//        float paddingLeft = padding;
-//        float contentX = mColumnWidth[0] + paddingLeft;
-//        float contentY = mLinePaint.getFontMetrics().bottom - mLinePaint.getFontMetrics().top - mLinePaint.getFontMetrics().descent + paddingTop;
-//
-//        canvas.drawLine(lenX, 0, formWidth, 0, mLinePaint);
-//        canvas.drawLine(lenX, 0, lenX, mRowHeight[0], mLinePaint);
-//        for (int i = 1; i < mAdapter.getColumnCount(); i++) {
-//            canvas.drawText(mAdapter.mTitle[i], contentX, contentY, mLinePaint);
-//            contentX += mColumnWidth[i];
-//            lenX += mColumnWidth[i];
-//            canvas.drawLine(lenX, 0, lenX, mRowHeight[0], mLinePaint);
-//        }
-//
-//        canvas.restore();
-//    }
-//
-//    private void drawContent(Canvas canvas, float formHeight, float formWidth) {
-//        canvas.save();
-//        canvas.clipRect(mColumnWidth[0], mRowHeight[0], mFormWidth, mFormHeight);
-//        canvas.translate(offsetX, offsetY);
-//        float lenX = mColumnWidth[0];
-//        float lenY = mRowHeight[0];
-//        float paddingTop = padding;
-//        float paddingLeft = padding;
-//        float contentX = mColumnWidth[0] + paddingLeft;
-//        float contentY = mLinePaint.getFontMetrics().bottom - mLinePaint.getFontMetrics().top - mLinePaint.getFontMetrics().descent + paddingTop;
-//
-//        contentY += mRowHeight[0];
-//        canvas.drawLine(lenX, lenY, formWidth, lenY, mLinePaint);
-//        canvas.drawLine(lenX, lenY, lenX, formHeight, mLinePaint);
-//
-//        for (int i = 0; i < mAdapter.getRowCount(); i++) {
-//            for (int j = 1; j < mAdapter.getColumnCount(); j++) {
-//                canvas.drawText(mAdapter.getCellContent(i, j), contentX, contentY, mLinePaint);
-//                lenX += mColumnWidth[j];
-//                canvas.drawLine(lenX, lenY, lenX, lenY + mRowHeight[i + 1], mLinePaint);
-//                contentX += mColumnWidth[j];
-//            }
-//            lenX = mColumnWidth[0];
-//            lenY += mRowHeight[i + 1];
-//            contentX = mColumnWidth[0] + paddingLeft;
-//            contentY += mRowHeight[i + 1];
-//            canvas.drawLine(mColumnWidth[0], lenY, formWidth, lenY, mLinePaint);
-//        }
-//    }
+    private void drawFormTitle(Canvas canvas) {
+        canvas.save();
+        canvas.clipRect(mFormParam.mColumnWidth[0], 0, mFormParam.getFormWidth(), mFormParam.mRowHeight[0] + 1);
+        canvas.translate(offsetX, 0);
+
+        for (int i = 1; i < mAdapter.getColumnCount(); i++) {
+            AbsFormCell cell = mFormParam.getCellByPosition(0, i);
+            cell.drawCell(canvas);
+        }
+        canvas.restore();
+    }
+
+    private void drawContent(Canvas canvas) {
+        canvas.save();
+        canvas.clipRect(mFormParam.mColumnWidth[0], mFormParam.mRowHeight[0], mFormParam.getFormWidth(), mFormParam.getFormHeight());
+        canvas.translate(offsetX, offsetY);
+
+        for (int i = 1; i < mAdapter.getRowCount(); i++) {
+            for (int j = 1; j < mAdapter.getColumnCount(); j++) {
+                AbsFormCell cell = mFormParam.getCellByPosition(i, j);
+                cell.drawCell(canvas);
+            }
+        }
+    }
 
 
     @Override

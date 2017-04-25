@@ -46,12 +46,15 @@ class FormParam {
         int colCount = mAdapter.getColumnCount();
         mRowHeight = new float[rowCount];
         mColumnWidth = new float[colCount];
+        mFormHeight = 0;
+        mFormWidth = 0;
         calculateFormSize();
         float cellStartX = 0;
         float cellStartY = 0;
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
-                mCells[i][j].setParams(cellStartX, cellStartY);
+                mCells[i][j].setParams(cellStartX, cellStartY, mRowHeight[i], mColumnWidth[j]);
+                mCells[i][j].setPosition(i, j);
                 cellStartX += mColumnWidth[j];
             }
             cellStartX = 0;
