@@ -1,5 +1,8 @@
 package com.nebula.wheel;
 
+import android.graphics.Paint;
+import android.util.Log;
+
 /**
  * Created by pan on 2017/4/17.
  */
@@ -23,7 +26,11 @@ class FormParam {
 
     private boolean isInitialized;
 
+    private Paint mLinePaint;
+
     FormParam() {
+        mLinePaint = new Paint();
+        mLinePaint.setStrokeWidth(2);
     }
 
     void initCells(BaseAdapter adapter) {
@@ -35,6 +42,7 @@ class FormParam {
             for (int j = 0; j < colCount; j++) {
                 if (mCells[i][j] == null) {
                     mCells[i][j] = mAdapter.createCell(i, j);
+                    mCells[i][j].setLinePaint(mLinePaint);
                 }
             }
         }
@@ -62,9 +70,28 @@ class FormParam {
         }
     }
 
+    void invokeClick(float pressX, float pressY) {
+        float sum = 0;
+        int i = -1, j = -1;
+        while (sum < pressY) {
+            sum += mRowHeight[++i];
+        }
+        sum = 0;
+        while (sum < pressX) {
+            sum += mColumnWidth[++j];
+        }
+        Log.e("qwe", i + ":" + j);
+        AbsFormCell cell = getCellByPosition(i, j);
+        cell.preformClick(cell);
+    }
+
     AbsFormCell getCellByPosition(int rowNumber, int columnNumber) {
 //        checkInit();
         return mCells[rowNumber][columnNumber];
+    }
+
+    void setCellFrameLineWidth(float width) {
+        mLinePaint.setStrokeWidth(width);
     }
 
     float getFormHeight() {

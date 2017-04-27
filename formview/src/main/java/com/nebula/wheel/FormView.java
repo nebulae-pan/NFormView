@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -96,7 +97,8 @@ public class FormView extends View {
         cell.drawCell(canvas);
 
         canvas.save();
-        canvas.clipRect(0, beginRowHeight, beginColumnWidth + 1, mFormParam.getFormHeight());
+        canvas.clipRect(0, beginRowHeight,
+                beginColumnWidth, mFormParam.getFormHeight());
         canvas.translate(0, offsetY);
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
             cell = mFormParam.getCellByPosition(i, 0);
@@ -107,7 +109,8 @@ public class FormView extends View {
 
     private void drawFormTitle(Canvas canvas) {
         canvas.save();
-        canvas.clipRect(mFormParam.mColumnWidth[0], 0, mFormParam.getFormWidth(), mFormParam.mRowHeight[0] + 1);
+        canvas.clipRect(mFormParam.mColumnWidth[0], 0,
+                mFormParam.getFormWidth(), mFormParam.mRowHeight[0]);
         canvas.translate(offsetX, 0);
 
         for (int i = 1; i < mAdapter.getColumnCount(); i++) {
@@ -119,7 +122,8 @@ public class FormView extends View {
 
     private void drawContent(Canvas canvas) {
         canvas.save();
-        canvas.clipRect(mFormParam.mColumnWidth[0], mFormParam.mRowHeight[0], mFormParam.getFormWidth(), mFormParam.getFormHeight());
+        canvas.clipRect(mFormParam.mColumnWidth[0], mFormParam.mRowHeight[0],
+                mFormParam.getFormWidth(), mFormParam.getFormHeight());
         canvas.translate(offsetX, offsetY);
 
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
@@ -148,6 +152,12 @@ public class FormView extends View {
                 offsetX = offsetX < limitX ? limitX : offsetX;
                 offsetY = offsetY < limitY ? limitY : offsetY;
                 invalidate();
+                break;
+            case MotionEvent.ACTION_UP:
+                Log.e("action up", event.getX() + ":" + pressX + "|" + event.getY() + ":" + pressY);
+                if (event.getX() == pressX + offsetX && event.getY() == pressY + offsetY) {
+                    mFormParam.invokeClick(pressX, pressY);
+                }
                 break;
             default:
                 break;

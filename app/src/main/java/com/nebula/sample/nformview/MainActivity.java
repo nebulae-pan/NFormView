@@ -3,7 +3,11 @@ package com.nebula.sample.nformview;
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.nebula.wheel.AbsFormCell;
 import com.nebula.wheel.BaseAdapter;
 import com.nebula.wheel.FormCell;
 import com.nebula.wheel.FormView;
@@ -62,8 +66,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public void bindCell(FormCell cell, int rowNumber, int columnNumber) {
+        public void bindCell(final FormCell cell, int rowNumber, int columnNumber) {
             cell.setContent(mData[rowNumber][columnNumber]);
+            cell.setOnCellClickListener(new AbsFormCell.OnCellClickListener() {
+                @Override
+                public void onCellClick(AbsFormCell formCell) {
+                    FormCell cell1 = (FormCell) formCell;
+                    Toast.makeText(mContext, cell1.getContent(), Toast.LENGTH_SHORT).show();
+                    Log.e("asd", cell1.getContent());
+                }
+            });
         }
 
     }

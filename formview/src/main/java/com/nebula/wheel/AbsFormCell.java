@@ -3,6 +3,7 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+
 import com.nebula.utils.DensityUtil;
 
 /**
@@ -17,20 +18,21 @@ abstract public class AbsFormCell {
 
     protected float mPadding;
 
+    private Paint mLinePaint;
+
     private int mRow;
     private int mCol;
 
     protected Context mContext;
 
-    private Paint mLinePaint;
+    private OnCellClickListener mOnCellClickListener;
 
     public AbsFormCell(Context context) {
         this.mContext = context;
         mPadding = DensityUtil.dip2Px(context, 5);
-        mLinePaint = new Paint();
-//        mLinePaint.setStrokeWidth(DensityUtil.dip2Px(context, 1));
     }
 
+    abstract public void draw(Canvas canvas);
 
     public void reset() {
         mStartX = 0;
@@ -46,6 +48,10 @@ abstract public class AbsFormCell {
         this.mWidth = width;
     }
 
+    public void setOnCellClickListener(OnCellClickListener onCellClickListener) {
+        this.mOnCellClickListener = onCellClickListener;
+    }
+
     void setPosition(int row, int col) {
         this.mRow = row;
         this.mCol = col;
@@ -56,8 +62,8 @@ abstract public class AbsFormCell {
         draw(canvas);
     }
 
-    float getLineWidth() {
-        return mLinePaint.getStrokeWidth();
+    void preformClick(AbsFormCell cell) {
+        mOnCellClickListener.onCellClick(cell);
     }
 
     private void drawCellFrame(Canvas canvas) {
@@ -67,11 +73,14 @@ abstract public class AbsFormCell {
         if (mCol == 0) {
             canvas.drawLine(mStartX, mStartY, mStartX, mStartY + mHeight, mLinePaint);
         }
-        canvas.drawLine(mStartX + mWidth, mStartY, mStartX + mWidth, mStartY + mHeight, mLinePaint);
-        canvas.drawLine(mStartX, mStartY + mHeight, mStartX + mWidth, mStartY + mHeight, mLinePaint);
+        float lineWidth = mLinePaint.getStrokeWidth()/2;
+        canvas.drawLine(mStartX + mWidth - lineWidth, mStartY, mStartX + mWidth - lineWidth, mStartY + mHeight, mLinePaint);
+        canvas.drawLine(mStartX, mStartY + mHeight - lineWidth, mStartX + mWidth, mStartY + mHeight - lineWidth, mLinePaint);
     }
 
-    abstract public void draw(Canvas canvas);
+    void setLinePaint(Paint paint) {
+        this.mLinePaint = paint;
+    }
 
     public float calculateCellHeight() {
         return 0;
@@ -87,5 +96,9 @@ abstract public class AbsFormCell {
 
     public float getCellWidth() {
         return mWidth;
+    }
+
+    public interface OnCellClickListener{
+        void onCellClick(AbsFormCell formCell);
     }
 }

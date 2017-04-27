@@ -33,6 +33,9 @@ public class FormCell extends AbsFormCell {
         canvas.drawText(mContent, contentX, contentY, mPaint);
     }
 
+    public String getContent() {
+        return mContent;
+    }
 
     @Override
     public float calculateCellWidth() {
