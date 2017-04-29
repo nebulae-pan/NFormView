@@ -11,12 +11,16 @@ import com.nebula.utils.DensityUtil;
  */
 
 abstract public class AbsFormCell {
+    static final int STATE_NORMAL = 1;
+    static final int STATE_PRESS = 2;
     protected float mStartX;
     protected float mStartY;
     protected float mHeight;
     protected float mWidth;
 
     protected float mPadding;
+
+    private int mState;
 
     private Paint mLinePaint;
 
@@ -59,23 +63,51 @@ abstract public class AbsFormCell {
 
     void drawCell(Canvas canvas) {
         drawCellFrame(canvas);
+        drawBackground(canvas);
         draw(canvas);
     }
 
     void preformClick(AbsFormCell cell) {
-        mOnCellClickListener.onCellClick(cell);
+        if (mOnCellClickListener != null) {
+            mOnCellClickListener.onCellClick(cell);
+        }
     }
 
     private void drawCellFrame(Canvas canvas) {
+        float lineWidth = mLinePaint.getStrokeWidth()/2;
+        float startX = mStartX - lineWidth;
+        float startY = mStartY - lineWidth;
+        float width = mWidth + 2 * lineWidth;
+        float height = mHeight + 2 * lineWidth;
         if (mRow == 0) {
-            canvas.drawLine(mStartX, mStartY, mStartX + mWidth, mStartY, mLinePaint);
+            canvas.drawLine(startX - lineWidth, startY, startX + width, startY, mLinePaint);
         }
         if (mCol == 0) {
-            canvas.drawLine(mStartX, mStartY, mStartX, mStartY + mHeight, mLinePaint);
+            canvas.drawLine(startX, startY, startX, startY + height, mLinePaint);
         }
-        float lineWidth = mLinePaint.getStrokeWidth()/2;
-        canvas.drawLine(mStartX + mWidth - lineWidth, mStartY, mStartX + mWidth - lineWidth, mStartY + mHeight, mLinePaint);
-        canvas.drawLine(mStartX, mStartY + mHeight - lineWidth, mStartX + mWidth, mStartY + mHeight - lineWidth, mLinePaint);
+        canvas.drawLine(startX + width, startY, startX + width, startY + height, mLinePaint);
+        canvas.drawLine(startX, startY + height, startX + width, startY + height, mLinePaint);
+    }
+
+    private void drawBackground(Canvas canvas) {
+        canvas.save();
+        switch (mState) {
+            case STATE_NORMAL:
+                canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
+                canvas.drawColor(0xffffffff);
+                break;
+            case STATE_PRESS:
+                canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
+                canvas.drawColor(0x66cccccc);
+                break;
+            default:
+                break;
+        }
+        canvas.restore();
+    }
+
+    void stateChangeTo(int stateCode) {
+        this.mState = stateCode;
     }
 
     void setLinePaint(Paint paint) {
@@ -98,7 +130,7 @@ abstract public class AbsFormCell {
         return mWidth;
     }
 
-    public interface OnCellClickListener{
+    public interface OnCellClickListener {
         void onCellClick(AbsFormCell formCell);
     }
 }

@@ -38,7 +38,6 @@ public class FormView extends View {
 
     public FormView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         setLongClickable(true);
         mFormParam = new FormParam();
     }
@@ -141,10 +140,15 @@ public class FormView extends View {
             case MotionEvent.ACTION_DOWN:
                 pressX = event.getX() - offsetX;
                 pressY = event.getY() - offsetY;
+                mFormParam.stateChange(pressX, pressY, AbsFormCell.STATE_PRESS);
+                invalidate();
                 break;
             case MotionEvent.ACTION_MOVE:
                 offsetX = event.getX() - pressX;
                 offsetY = event.getY() - pressY;
+                if (offsetX != 0 || offsetY != 0) {
+                    mFormParam.stateChange(pressX, pressY, AbsFormCell.STATE_NORMAL);
+                }
                 offsetX = offsetX > 0 ? 0 : offsetX;
                 offsetY = offsetY > 0 ? 0 : offsetY;
                 float limitX = -mFormParam.getFormWidth() + getWidth();
@@ -157,6 +161,7 @@ public class FormView extends View {
                 Log.e("action up", event.getX() + ":" + pressX + "|" + event.getY() + ":" + pressY);
                 if (event.getX() == pressX + offsetX && event.getY() == pressY + offsetY) {
                     mFormParam.invokeClick(pressX, pressY);
+                    invalidate();
                 }
                 break;
             default:

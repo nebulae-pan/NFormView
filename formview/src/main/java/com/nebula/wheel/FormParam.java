@@ -30,7 +30,7 @@ class FormParam {
 
     FormParam() {
         mLinePaint = new Paint();
-        mLinePaint.setStrokeWidth(2);
+        mLinePaint.setStrokeWidth(15);
     }
 
     void initCells(BaseAdapter adapter) {
@@ -57,33 +57,51 @@ class FormParam {
         mFormHeight = 0;
         mFormWidth = 0;
         calculateFormSize();
-        float cellStartX = 0;
-        float cellStartY = 0;
+        float lineWidth = mLinePaint.getStrokeWidth();
+        float cellStartX = lineWidth;
+        float cellStartY = lineWidth;
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 mCells[i][j].setParams(cellStartX, cellStartY, mRowHeight[i], mColumnWidth[j]);
                 mCells[i][j].setPosition(i, j);
-                cellStartX += mColumnWidth[j];
+                cellStartX += mColumnWidth[j] + lineWidth;
             }
-            cellStartX = 0;
-            cellStartY += mRowHeight[i];
+            cellStartX = lineWidth;
+            cellStartY += mRowHeight[i] + lineWidth;
         }
+        AbsFormCell cell = mCells[rowCount - 1][colCount - 1];
+        mFormHeight = cell.mStartY + cell.mWidth + lineWidth;
+        mFormWidth = cell.mStartX + cell.mHeight + lineWidth;
+    }
+
+    void stateChange(float pressX, float pressY, int stateCode) {
+        AbsFormCell cell = getCellByCoordinate(pressX, pressY);
+        cell.stateChangeTo(stateCode);
     }
 
     void invokeClick(float pressX, float pressY) {
+        AbsFormCell cell = getCellByCoordinate(pressX, pressY);
+        cell.preformClick(cell);
+        cell.stateChangeTo(AbsFormCell.STATE_NORMAL);
+    }
+
+    private AbsFormCell getCellByCoordinate(float pressX, float pressY) {
         float sum = 0;
+        AbsFormCell cell;
         int i = -1, j = -1;
         while (sum < pressY) {
-            sum += mRowHeight[++i];
+            cell = mCells[++i][0];
+            sum += cell.mStartY + cell.mHeight;
         }
         sum = 0;
         while (sum < pressX) {
-            sum += mColumnWidth[++j];
+            cell = mCells[0][++j];
+            sum += cell.mStartX + cell.mWidth;
         }
         Log.e("qwe", i + ":" + j);
-        AbsFormCell cell = getCellByPosition(i, j);
-        cell.preformClick(cell);
+        return getCellByPosition(i, j);
     }
+
 
     AbsFormCell getCellByPosition(int rowNumber, int columnNumber) {
 //        checkInit();
@@ -112,11 +130,11 @@ class FormParam {
         //calculate form size
         for (int i = 0; i < mAdapter.getRowCount(); i++) {
             mRowHeight[i] = calculateRowCellMaxHeight(i);
-            mFormHeight += mRowHeight[i];
+//            mFormHeight += mRowHeight[i];
         }
         for (int i = 0; i < mAdapter.getColumnCount(); i++) {
             mColumnWidth[i] = calculateColumnCellMaxWidth(i);
-            mFormWidth += mColumnWidth[i];
+//            mFormWidth += mColumnWidth[i];
         }
     }
 
