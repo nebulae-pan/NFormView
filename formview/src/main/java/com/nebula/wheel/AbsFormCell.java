@@ -33,6 +33,7 @@ abstract public class AbsFormCell {
 
     public AbsFormCell(Context context) {
         this.mContext = context;
+        mState = STATE_NORMAL;
         mPadding = DensityUtil.dip2Px(context, 5);
     }
 
@@ -74,19 +75,19 @@ abstract public class AbsFormCell {
     }
 
     private void drawCellFrame(Canvas canvas) {
-        float lineWidth = mLinePaint.getStrokeWidth()/2;
+        float lineWidth = mLinePaint.getStrokeWidth() / 2;
         float startX = mStartX - lineWidth;
         float startY = mStartY - lineWidth;
         float width = mWidth + 2 * lineWidth;
         float height = mHeight + 2 * lineWidth;
         if (mRow == 0) {
-            canvas.drawLine(startX - lineWidth, startY, startX + width, startY, mLinePaint);
+            canvas.drawLine(startX - lineWidth, startY, startX + width + lineWidth, startY, mLinePaint);
         }
         if (mCol == 0) {
-            canvas.drawLine(startX, startY, startX, startY + height, mLinePaint);
+            canvas.drawLine(startX, startY, startX, startY + height + lineWidth, mLinePaint);
         }
         canvas.drawLine(startX + width, startY, startX + width, startY + height, mLinePaint);
-        canvas.drawLine(startX, startY + height, startX + width, startY + height, mLinePaint);
+        canvas.drawLine(startX, startY + height, startX + width + lineWidth, startY + height, mLinePaint);
     }
 
     private void drawBackground(Canvas canvas) {

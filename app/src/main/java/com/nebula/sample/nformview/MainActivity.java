@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onCellClick(AbsFormCell formCell) {
                     FormCell cell1 = (FormCell) formCell;
-                    Toast.makeText(mContext, cell1.getContent(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(mContext, cell1.getContent(), Toast.LENGTH_SHORT).show();
                     Log.e("asd", cell1.getContent());
                 }
             });
