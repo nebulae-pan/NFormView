@@ -3,16 +3,19 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 
 import com.nebula.utils.DensityUtil;
 
 /**
  * Created by pan on 2017/4/17.
+ * Base Form Cell
  */
 
 abstract public class AbsFormCell {
     static final int STATE_NORMAL = 1;
     static final int STATE_PRESS = 2;
+    static final int STATE_SELECTED = 3;
     protected float mStartX;
     protected float mStartY;
     protected float mHeight;
@@ -21,11 +24,16 @@ abstract public class AbsFormCell {
     protected float mPadding;
 
     private int mState;
+    private int mCellNormalBackground;
+    private int mCellPressBackground;
 
     private Paint mLinePaint;
 
     private int mRow;
     private int mCol;
+
+    private boolean isDrawVerticalLine = true;
+    private boolean isDrawHorizontalLine = false;
 
     protected Context mContext;
 
@@ -35,6 +43,8 @@ abstract public class AbsFormCell {
         this.mContext = context;
         mState = STATE_NORMAL;
         mPadding = DensityUtil.dip2Px(context, 5);
+        mCellNormalBackground = ContextCompat.getColor(context, R.color.default_background);
+        mCellPressBackground = ContextCompat.getColor(context, R.color.default_press_background);
     }
 
     abstract public void draw(Canvas canvas);
@@ -55,6 +65,14 @@ abstract public class AbsFormCell {
 
     public void setOnCellClickListener(OnCellClickListener onCellClickListener) {
         this.mOnCellClickListener = onCellClickListener;
+    }
+
+    public void setDrawHorizontalLin(boolean isDraw) {
+        this.isDrawHorizontalLine = isDraw;
+    }
+
+    public void setDrawVerticalLine(boolean isDraw) {
+        this.isDrawVerticalLine = isDraw;
     }
 
     void setPosition(int row, int col) {
@@ -80,14 +98,19 @@ abstract public class AbsFormCell {
         float startY = mStartY - lineWidth;
         float width = mWidth + 2 * lineWidth;
         float height = mHeight + 2 * lineWidth;
-        if (mRow == 0) {
-            canvas.drawLine(startX - lineWidth, startY, startX + width + lineWidth, startY, mLinePaint);
+        if (isDrawHorizontalLine) {
+            if (mRow == 0) {
+                canvas.drawLine(startX - lineWidth, startY, startX + width + lineWidth, startY, mLinePaint);
+            }
+            canvas.drawLine(startX, startY + height, startX + width + lineWidth, startY + height, mLinePaint);
         }
-        if (mCol == 0) {
-            canvas.drawLine(startX, startY, startX, startY + height + lineWidth, mLinePaint);
+        if (isDrawVerticalLine) {
+            if (mCol == 0) {
+                canvas.drawLine(startX, startY, startX, startY + height + lineWidth, mLinePaint);
+            }
+            canvas.drawLine(startX + width, startY, startX + width, startY + height, mLinePaint);
         }
-        canvas.drawLine(startX + width, startY, startX + width, startY + height, mLinePaint);
-        canvas.drawLine(startX, startY + height, startX + width + lineWidth, startY + height, mLinePaint);
+
     }
 
     private void drawBackground(Canvas canvas) {
@@ -95,11 +118,11 @@ abstract public class AbsFormCell {
         switch (mState) {
             case STATE_NORMAL:
                 canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
-                canvas.drawColor(0xffffffff);
+                canvas.drawColor(mCellNormalBackground);
                 break;
             case STATE_PRESS:
                 canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
-                canvas.drawColor(0x66cccccc);
+                canvas.drawColor(mCellPressBackground);
                 break;
             default:
                 break;

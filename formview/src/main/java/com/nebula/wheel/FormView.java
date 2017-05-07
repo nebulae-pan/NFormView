@@ -3,6 +3,7 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
+import android.support.v4.view.NestedScrollingChild;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -12,7 +13,7 @@ import android.view.View;
  * Created by pan on 2017/3/28.
  * View can draw Form
  */
-public class FormView extends View {
+public class FormView extends View implements NestedScrollingChild{
     /**
      * Adapter
      */

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="default_background">#33dddddd</color>
+    <color name="default_press_background">#33000000</color>
+</resources>
