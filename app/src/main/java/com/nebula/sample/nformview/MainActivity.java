@@ -1,6 +1,7 @@
 package com.nebula.sample.nformview;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,7 +15,7 @@ import com.nebula.wheel.FormView;
 
 public class MainActivity extends AppCompatActivity {
 
-    String[][] mData = new String[][]{{"1asd", "1asd", "1asd", "1asd", "2ysd", "2asd", "2asd", "北京市"}
+    static String[][] mData = new String[][]{{"1asd", "1asd", "1asd", "1asd", "2ysd", "2asd", "2asd", "北京市"}
             , {"2ysd", "2asd", "2asd", "北京市", "2ysd", "2asd", "2asd", "北京市"}
             , {"3gsd", "3asd", "3fsd", "3额sd", "2ysd", "2asd", "2asd", "北京市"}
             , {"3gsd", "3asd", "3fsd", "3额sd", "2ysd", "2asd", "2asd", "北京市"}
@@ -38,10 +39,11 @@ public class MainActivity extends AppCompatActivity {
 
         mAdapter = new MyAdapter(this, mData);
         mFormView.setAdapter(mAdapter);
+//        startActivity(new Intent(this,ScrollingActivity.class));
     }
 
 
-    private static class MyAdapter extends BaseAdapter<FormCell> {
+    static class MyAdapter extends BaseAdapter<FormCell> {
         String[][] mData;
         Context mContext;
 
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getColumnCount() {
-            return mData[0].length;
+            return 3;
         }
 
         @Override

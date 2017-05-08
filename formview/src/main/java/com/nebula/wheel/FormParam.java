@@ -89,18 +89,18 @@ class FormParam {
         float lineWidth = mLinePaint.getStrokeWidth();
         float sum = lineWidth;
         int i = -1, j = -1;
-        if (pressY + offsetY < mRowHeight[0] + 2 * mLinePaint.getStrokeWidth()) {
+        if (pressY < mRowHeight[0] + 2 * mLinePaint.getStrokeWidth()) {
             i = 0;
         } else {
-            while (sum < pressY) {
+            while(sum < pressY - offsetY) {
                 sum += mRowHeight[++i] + lineWidth;
             }
         }
-        if (pressX + offsetX < mColumnWidth[0] + 2 * mLinePaint.getStrokeWidth()) {
+        if (pressX< mColumnWidth[0] + 2 * mLinePaint.getStrokeWidth()) {
             j = 0;
         } else {
             sum = lineWidth;
-            while (sum < pressX) {
+            while (sum < pressX - offsetX) {
                 sum += mColumnWidth[++j] + lineWidth;
             }
         }

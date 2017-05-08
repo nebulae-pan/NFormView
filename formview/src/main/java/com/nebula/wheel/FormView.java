@@ -3,7 +3,10 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import android.support.v4.view.NestedScrollingChild;
+import android.support.v4.view.NestedScrollingChildHelper;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -13,7 +16,7 @@ import android.view.View;
  * Created by pan on 2017/3/28.
  * View can draw Form
  */
-public class FormView extends View implements NestedScrollingChild{
+public class FormView extends View implements NestedScrollingChild {
     /**
      * Adapter
      */
@@ -24,10 +27,20 @@ public class FormView extends View implements NestedScrollingChild{
      */
     private float mPressX;
     private float mPressY;
-    private float mOffsetX;
-    private float mOffsetY;
+//    private float mOffsetX;
+//    private float mOffsetY;
+
+    private int mContentScrollX;
+    private int mContentScrollY;
 
     private FormParam mFormParam;
+
+    /**
+     * nested scroll about
+     */
+    private NestedScrollingChildHelper mScrollChildHelper = new NestedScrollingChildHelper(this);
+    private final int[] mScrollOffset = new int[2];
+    private final int[] mScrollConsumed = new int[2];
 
     public FormView(Context context) {
         this(context, null);
@@ -41,6 +54,7 @@ public class FormView extends View implements NestedScrollingChild{
         super(context, attrs, defStyleAttr);
         setLongClickable(true);
         mFormParam = new FormParam();
+        setNestedScrollingEnabled(true);
     }
 
     public void setAdapter(BaseAdapter adapter) {
@@ -100,7 +114,7 @@ public class FormView extends View implements NestedScrollingChild{
         canvas.save();
         canvas.clipRect(0, beginRowHeight + 2 * lineWidth,
                 beginColumnWidth + 2 * lineWidth, mFormParam.getFormHeight());
-        canvas.translate(0, mOffsetY);
+        canvas.translate(0, -mContentScrollY);
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
             cell = mFormParam.getCellByPosition(i, 0);
             cell.drawCell(canvas);
@@ -113,7 +127,7 @@ public class FormView extends View implements NestedScrollingChild{
         canvas.save();
         canvas.clipRect(mFormParam.mColumnWidth[0] + 2 * lineWidth, 0,
                 mFormParam.getFormWidth(), mFormParam.mRowHeight[0] + 2 * lineWidth);
-        canvas.translate(mOffsetX, 0);
+        canvas.translate(-mContentScrollX, 0);
 
         for (int i = 1; i < mAdapter.getColumnCount(); i++) {
             AbsFormCell cell = mFormParam.getCellByPosition(0, i);
@@ -127,7 +141,7 @@ public class FormView extends View implements NestedScrollingChild{
         canvas.save();
         canvas.clipRect(mFormParam.mColumnWidth[0] + 2 * lineWidth, mFormParam.mRowHeight[0] + 2 * lineWidth,
                 mFormParam.getFormWidth(), mFormParam.getFormHeight());
-        canvas.translate(mOffsetX, mOffsetY);
+        canvas.translate(-mContentScrollX, -mContentScrollY);
 
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
             for (int j = 1; j < mAdapter.getColumnCount(); j++) {
@@ -137,40 +151,115 @@ public class FormView extends View implements NestedScrollingChild{
         }
     }
 
+    private void scrollContentBy(int dx, int dy) {
+        mContentScrollX += dx;
+        mContentScrollY += dy;
+    }
+
+    private void scrollContentTo(int newX, int newY) {
+        mContentScrollX = newX;
+        mContentScrollY = newY;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mPressX = event.getX() - mOffsetX;
-                mPressY = event.getY() - mOffsetY;
-                mFormParam.stateChange(mPressX, mPressY, mOffsetX, mOffsetY, AbsFormCell.STATE_PRESS);
+                mPressX = event.getX();
+                mPressY = event.getY();
+//                mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_PRESS);
                 invalidate();
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
             case MotionEvent.ACTION_MOVE:
-                mOffsetX = event.getX() - mPressX;
-                mOffsetY = event.getY() - mPressY;
-                if (mOffsetX != 0 || mOffsetY != 0) {
-                    mFormParam.stateChange(mPressX, mPressY, mOffsetX, mOffsetY, AbsFormCell.STATE_NORMAL);
+                int offsetX = (int) (mPressX - event.getX());
+                int offsetY = (int) (mPressY - event.getY());
+
+
+                if (dispatchNestedPreScroll(0, (int) offsetY, mScrollConsumed, mScrollOffset)) {
+                    offsetY -= mScrollConsumed[1];
                 }
-                mOffsetX = mOffsetX > 0 ? 0 : mOffsetX;
-                mOffsetY = mOffsetY > 0 ? 0 : mOffsetY;
-                float limitX = -mFormParam.getFormWidth() + getWidth();
-                float limitY = -mFormParam.getFormHeight() + getHeight();
-                mOffsetX = mOffsetX < limitX ? limitX : mOffsetX;
-                mOffsetY = mOffsetY < limitY ? limitY : mOffsetY;
+                mPressY = (int) (event.getY() - mScrollOffset[1]);
+                mPressX = event.getX();
+
+                int oldY = mContentScrollY;
+                int newScrollX = mContentScrollX + offsetX;
+                int newScrollY = mContentScrollY + offsetY;
+                newScrollX = newScrollX < 0 ? 0 : newScrollX;
+                newScrollY = newScrollY < 0 ? 0 : newScrollY;
+                int limitX = (int) (mFormParam.getFormWidth() - getWidth());
+                int limitY = (int) (mFormParam.getFormHeight() - getHeight());
+                newScrollX = newScrollX > limitX ? limitX : newScrollX;
+                newScrollY = newScrollY > limitY ? limitY : newScrollY;
+
+                scrollContentTo(newScrollX, newScrollY);
+
+                int scrollDeltaY = newScrollY - oldY;
+                int unconsumedY = (offsetY - scrollDeltaY);
+                if (dispatchNestedScroll(0, scrollDeltaY, 0, unconsumedY, mScrollOffset)) {
+                    mPressY -= mScrollOffset[1];
+                }
                 invalidate();
+                if (offsetX != 0 || offsetY != 0) {
+//                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_NORMAL);
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.e("action up", event.getX() + ":" + mPressX + "|" + event.getY() + ":" + mPressY);
-                if (event.getX() == mPressX + mOffsetX && event.getY() == mPressY + mOffsetY) {
-                    mFormParam.invokeClick(mPressX, mPressY, mOffsetX, mOffsetY);
+                if (event.getX() == mPressX && event.getY() == mPressY) {
+//                    mFormParam.invokeClick(mPressX, mPressY, mContentScrollX, mContentScrollY);
                     invalidate();
                 }
+                stopNestedScroll();
                 break;
             default:
                 break;
         }
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mScrollChildHelper.setNestedScrollingEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return mScrollChildHelper.isNestedScrollingEnabled();
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return mScrollChildHelper.startNestedScroll(axes);
+    }
+
+    @Override
+    public void stopNestedScroll() {
+        mScrollChildHelper.stopNestedScroll();
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent() {
+        return mScrollChildHelper.hasNestedScrollingParent();
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed, @Nullable @Size(value = 2) int[] offsetInWindow) {
+        return mScrollChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, @Nullable @Size(value = 2) int[] consumed, @Nullable @Size(value = 2) int[] offsetInWindow) {
+        return mScrollChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+        return mScrollChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+        return mScrollChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 }

@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.wheel.sample.nformview.R;
+import com.nebula.wheel.FormView;
 
 public class ScrollingActivity extends AppCompatActivity {
 
@@ -17,6 +17,8 @@ public class ScrollingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scrolling);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        FormView formView = (FormView) findViewById(R.id.form_view);
+        formView.setAdapter(new MainActivity.MyAdapter(this, MainActivity.mData));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
