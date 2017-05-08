@@ -167,7 +167,7 @@ public class FormView extends View implements NestedScrollingChild {
             case MotionEvent.ACTION_DOWN:
                 mPressX = event.getX();
                 mPressY = event.getY();
-//                mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_PRESS);
+                mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_PRESS);
                 invalidate();
                 startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
@@ -176,7 +176,7 @@ public class FormView extends View implements NestedScrollingChild {
                 int offsetY = (int) (mPressY - event.getY());
 
 
-                if (dispatchNestedPreScroll(0, (int) offsetY, mScrollConsumed, mScrollOffset)) {
+                if (dispatchNestedPreScroll(0, offsetY, mScrollConsumed, mScrollOffset)) {
                     offsetY -= mScrollConsumed[1];
                 }
                 mPressY = (int) (event.getY() - mScrollOffset[1]);
@@ -187,8 +187,10 @@ public class FormView extends View implements NestedScrollingChild {
                 int newScrollY = mContentScrollY + offsetY;
                 newScrollX = newScrollX < 0 ? 0 : newScrollX;
                 newScrollY = newScrollY < 0 ? 0 : newScrollY;
-                int limitX = (int) (mFormParam.getFormWidth() - getWidth());
-                int limitY = (int) (mFormParam.getFormHeight() - getHeight());
+                int limitX = mFormParam.getFormWidth() > getWidth() ?
+                        (int) (mFormParam.getFormWidth() - getWidth()) : 0;
+                int limitY = mFormParam.getFormHeight() > getHeight() ?
+                        (int) (mFormParam.getFormHeight() - getHeight()) : 0;
                 newScrollX = newScrollX > limitX ? limitX : newScrollX;
                 newScrollY = newScrollY > limitY ? limitY : newScrollY;
 
@@ -201,13 +203,13 @@ public class FormView extends View implements NestedScrollingChild {
                 }
                 invalidate();
                 if (offsetX != 0 || offsetY != 0) {
-//                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_NORMAL);
+                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_NORMAL);
                 }
                 break;
             case MotionEvent.ACTION_UP:
                 Log.e("action up", event.getX() + ":" + mPressX + "|" + event.getY() + ":" + mPressY);
                 if (event.getX() == mPressX && event.getY() == mPressY) {
-//                    mFormParam.invokeClick(mPressX, mPressY, mContentScrollX, mContentScrollY);
+                    mFormParam.invokeClick(mPressX, mPressY, mContentScrollX, mContentScrollY);
                     invalidate();
                 }
                 stopNestedScroll();

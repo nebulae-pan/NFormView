@@ -92,7 +92,7 @@ class FormParam {
         if (pressY < mRowHeight[0] + 2 * mLinePaint.getStrokeWidth()) {
             i = 0;
         } else {
-            while(sum < pressY - offsetY) {
+            while(sum < pressY + offsetY) {
                 sum += mRowHeight[++i] + lineWidth;
             }
         }
@@ -100,7 +100,7 @@ class FormParam {
             j = 0;
         } else {
             sum = lineWidth;
-            while (sum < pressX - offsetX) {
+            while (sum < pressX + offsetX) {
                 sum += mColumnWidth[++j] + lineWidth;
             }
         }

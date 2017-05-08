@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getColumnCount() {
-            return 3;
+            return mData[0].length;
         }
 
         @Override
