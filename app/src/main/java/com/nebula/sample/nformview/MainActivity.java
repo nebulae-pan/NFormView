@@ -1,16 +1,13 @@
 package com.nebula.sample.nformview;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.nebula.wheel.AbsFormCell;
-import com.nebula.wheel.BaseAdapter;
 import com.nebula.wheel.FormCell;
+import com.nebula.wheel.BaseAdapter;
+import com.nebula.wheel.StringFormCell;
 import com.nebula.wheel.FormView;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    static class MyAdapter extends BaseAdapter<FormCell> {
+    static class MyAdapter extends BaseAdapter {
         String[][] mData;
         Context mContext;
 
@@ -63,17 +60,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        public FormCell createCell(int rowNumber, int colNumber) {
-            return new FormCell(mContext);
+        public StringFormCell createCell(int rowNumber, int colNumber) {
+            return new StringFormCell(mContext);
         }
 
         @Override
         public void bindCell(final FormCell cell, int rowNumber, int columnNumber) {
-            cell.setContent(mData[rowNumber][columnNumber]);
-            cell.setOnCellClickListener(new AbsFormCell.OnCellClickListener() {
+            StringFormCell stringFormCell = (StringFormCell) cell;
+            stringFormCell.setContent(mData[rowNumber][columnNumber]);
+            stringFormCell.setOnCellClickListener(new FormCell.OnCellClickListener() {
                 @Override
-                public void onCellClick(AbsFormCell formCell) {
-                    FormCell cell1 = (FormCell) formCell;
+                public void onCellClick(FormCell formCell) {
+                    StringFormCell cell1 = (StringFormCell) formCell;
 //                    Toast.makeText(mContext, cell1.getContent(), Toast.LENGTH_SHORT).show();
                     Log.e("asd", cell1.getContent());
                 }

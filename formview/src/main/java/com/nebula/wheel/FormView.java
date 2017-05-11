@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017. pan All rights reserved.
+ */
+
 package com.nebula.wheel;
 
 import android.content.Context;
@@ -27,8 +31,6 @@ public class FormView extends View implements NestedScrollingChild {
      */
     private float mPressX;
     private float mPressY;
-//    private float mOffsetX;
-//    private float mOffsetY;
 
     private int mContentScrollX;
     private int mContentScrollY;
@@ -85,7 +87,7 @@ public class FormView extends View implements NestedScrollingChild {
         int colCount = mAdapter.getColumnCount();
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
-                AbsFormCell cell = mFormParam.getCellByPosition(i, j);
+                FormCell cell = mFormParam.getCellByPosition(i, j);
                 mAdapter.bindCell(cell, i, j);
             }
         }
@@ -108,7 +110,7 @@ public class FormView extends View implements NestedScrollingChild {
         float beginColumnWidth = mFormParam.mColumnWidth[0];
         float beginRowHeight = mFormParam.mRowHeight[0];
         float lineWidth = mFormParam.getCellFrameLineWidth();
-        AbsFormCell cell = mFormParam.getCellByPosition(0, 0);
+        FormCell cell = mFormParam.getCellByPosition(0, 0);
         cell.drawCell(canvas);
 
         canvas.save();
@@ -130,7 +132,7 @@ public class FormView extends View implements NestedScrollingChild {
         canvas.translate(-mContentScrollX, 0);
 
         for (int i = 1; i < mAdapter.getColumnCount(); i++) {
-            AbsFormCell cell = mFormParam.getCellByPosition(0, i);
+            FormCell cell = mFormParam.getCellByPosition(0, i);
             cell.drawCell(canvas);
         }
         canvas.restore();
@@ -145,7 +147,7 @@ public class FormView extends View implements NestedScrollingChild {
 
         for (int i = 1; i < mAdapter.getRowCount(); i++) {
             for (int j = 1; j < mAdapter.getColumnCount(); j++) {
-                AbsFormCell cell = mFormParam.getCellByPosition(i, j);
+                FormCell cell = mFormParam.getCellByPosition(i, j);
                 cell.drawCell(canvas);
             }
         }
@@ -167,7 +169,7 @@ public class FormView extends View implements NestedScrollingChild {
             case MotionEvent.ACTION_DOWN:
                 mPressX = event.getX();
                 mPressY = event.getY();
-                mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_PRESS);
+                mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, FormCell.STATE_PRESS);
                 invalidate();
                 startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
@@ -203,7 +205,7 @@ public class FormView extends View implements NestedScrollingChild {
                 }
                 invalidate();
                 if (offsetX != 0 || offsetY != 0) {
-                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, AbsFormCell.STATE_NORMAL);
+                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, FormCell.STATE_NORMAL);
                 }
                 break;
             case MotionEvent.ACTION_UP:

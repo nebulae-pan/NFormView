@@ -9,7 +9,7 @@ import android.util.Log;
 
 class FormParam {
 
-    private AbsFormCell[][] mCells;
+    private FormCell[][] mCells;
 
     /**
      * line's width and height
@@ -37,7 +37,7 @@ class FormParam {
         this.mAdapter = adapter;
         int rowCount = mAdapter.getRowCount();
         int colCount = mAdapter.getColumnCount();
-        mCells = new AbsFormCell[rowCount][colCount];
+        mCells = new FormCell[rowCount][colCount];
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 if (mCells[i][j] == null) {
@@ -69,23 +69,23 @@ class FormParam {
             cellStartX = lineWidth;
             cellStartY += mRowHeight[i] + lineWidth;
         }
-        AbsFormCell cell = mCells[rowCount - 1][colCount - 1];
+        FormCell cell = mCells[rowCount - 1][colCount - 1];
         mFormHeight = cell.mStartY + cell.mHeight + lineWidth;
         mFormWidth = cell.mStartX + cell.mWidth + lineWidth;
     }
 
     void stateChange(float pressX, float pressY, float offsetX, float offsetY, int stateCode) {
-        AbsFormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
+        FormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
         cell.stateChangeTo(stateCode);
     }
 
     void invokeClick(float pressX, float pressY, float offsetX, float offsetY) {
-        AbsFormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
+        FormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
         cell.preformClick(cell);
-        cell.stateChangeTo(AbsFormCell.STATE_NORMAL);
+        cell.stateChangeTo(FormCell.STATE_NORMAL);
     }
 
-    private AbsFormCell getCellByCoordinate(float pressX, float pressY, float offsetX, float offsetY) {
+    private FormCell getCellByCoordinate(float pressX, float pressY, float offsetX, float offsetY) {
         float lineWidth = mLinePaint.getStrokeWidth();
         float sum = lineWidth;
         int i = -1, j = -1;
@@ -109,7 +109,7 @@ class FormParam {
     }
 
 
-    AbsFormCell getCellByPosition(int rowNumber, int columnNumber) {
+    FormCell getCellByPosition(int rowNumber, int columnNumber) {
 //        checkInit();
         return mCells[rowNumber][columnNumber];
     }
