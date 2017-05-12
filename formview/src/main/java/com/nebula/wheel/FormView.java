@@ -91,7 +91,7 @@ public class FormView extends View implements NestedScrollingChild {
                 mAdapter.bindCell(cell, i, j);
             }
         }
-        mFormParam.initParams();
+        mFormParam.initParams(getHeight(), getWidth());
     }
 
     @Override
@@ -265,5 +265,16 @@ public class FormView extends View implements NestedScrollingChild {
     @Override
     public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
         return mScrollChildHelper.dispatchNestedPreFling(velocityX, velocityY);
+    }
+
+    abstract static public class BaseAdapter<T extends FormCell> {
+
+        abstract public int getRowCount();
+
+        abstract public int getColumnCount();
+
+        abstract public T createCell(int rowNumber, int colNumber);
+
+        abstract public void bindCell(T cell, int rowNumber, int colNumber);
     }
 }

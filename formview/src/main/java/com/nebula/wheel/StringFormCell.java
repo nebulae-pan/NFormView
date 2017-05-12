@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017. pan All rights reserved.
+ */
+
 package com.nebula.wheel;
 
 import android.content.Context;
@@ -38,12 +42,12 @@ public class StringFormCell extends FormCell {
     }
 
     @Override
-    public float calculateCellWidth() {
+    public float calculateCellWidth(int colCount, int viewWidth) {
         return mPaint.measureText(mContent) + 2 * mPadding;
     }
 
     @Override
-    public float calculateCellHeight() {
+    public float calculateCellHeight(int rowCount, int viewHeight) {
         return mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + 2 * mPadding;
     }
 }

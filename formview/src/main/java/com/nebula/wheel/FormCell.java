@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2017. pan All rights reserved.
+ */
+
 package com.nebula.wheel;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.annotation.ColorRes;
 import android.support.v4.content.ContextCompat;
 
 import com.nebula.utils.DensityUtil;
@@ -29,11 +34,13 @@ abstract public class FormCell {
 
     private Paint mLinePaint;
 
+    private boolean mClickable = true;
+
     private int mRow;
     private int mCol;
 
     private boolean isDrawVerticalLine = true;
-    private boolean isDrawHorizontalLine = false;
+    private boolean isDrawHorizontalLine = true;
 
     protected Context mContext;
 
@@ -67,7 +74,11 @@ abstract public class FormCell {
         this.mOnCellClickListener = onCellClickListener;
     }
 
-    public void setDrawHorizontalLin(boolean isDraw) {
+    public void setBackgroundColor(@ColorRes int resId) {
+        mCellNormalBackground = ContextCompat.getColor(mContext, resId);
+    }
+
+    public void setDrawHorizontalLine(boolean isDraw) {
         this.isDrawHorizontalLine = isDraw;
     }
 
@@ -87,7 +98,7 @@ abstract public class FormCell {
     }
 
     void preformClick(FormCell cell) {
-        if (mOnCellClickListener != null) {
+        if (mOnCellClickListener != null && mClickable) {
             mOnCellClickListener.onCellClick(cell);
         }
     }
@@ -115,13 +126,12 @@ abstract public class FormCell {
 
     private void drawBackground(Canvas canvas) {
         canvas.save();
+        canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
         switch (mState) {
             case STATE_NORMAL:
-                canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
                 canvas.drawColor(mCellNormalBackground);
                 break;
             case STATE_PRESS:
-                canvas.clipRect(mStartX, mStartY, mStartX + mWidth, mStartY + mHeight);
                 canvas.drawColor(mCellPressBackground);
                 break;
             default:
@@ -131,6 +141,9 @@ abstract public class FormCell {
     }
 
     void stateChangeTo(int stateCode) {
+        if (!mClickable) {
+            return;
+        }
         this.mState = stateCode;
     }
 
@@ -138,11 +151,19 @@ abstract public class FormCell {
         this.mLinePaint = paint;
     }
 
-    public float calculateCellHeight() {
+    public float calculateCellHeight(int rowCount, int viewHeight) {
         return 0;
     }
 
-    public float calculateCellWidth() {
+    public boolean isClickable() {
+        return mClickable;
+    }
+
+    public void setClickable(boolean clickable) {
+        this.mClickable = clickable;
+    }
+
+    public float calculateCellWidth(int colCount, int viewWidth) {
         return 0;
     }
 

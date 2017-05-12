@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.nebula.wheel.FormCell;
-import com.nebula.wheel.BaseAdapter;
 import com.nebula.wheel.StringFormCell;
 import com.nebula.wheel.FormView;
 
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
             , {"1asd", "1asd", "1asd", "1asd", "2ysd", "2asd", "2asd", "北京市"}
             , {"4ksd", "4jsd", "4asd", "4asd", "2ysd", "2asd", "2asd", "北京市"}};
     FormView mFormView;
-    BaseAdapter mAdapter;
+    FormView.BaseAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    static class MyAdapter extends BaseAdapter {
+    static class MyAdapter extends FormView.BaseAdapter {
         String[][] mData;
         Context mContext;
 

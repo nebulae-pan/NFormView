@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2017. pan All rights reserved.
+ */
+
 package com.nebula.wheel;
 
 import android.graphics.Paint;
@@ -22,7 +26,7 @@ class FormParam {
     private float mFormHeight;
     private float mFormWidth;
 
-    private BaseAdapter mAdapter;
+    private FormView.BaseAdapter mAdapter;
 
     private boolean isInitialized;
 
@@ -33,7 +37,7 @@ class FormParam {
         mLinePaint.setStrokeWidth(1);
     }
 
-    void initCells(BaseAdapter adapter) {
+    void initCells(FormView.BaseAdapter adapter) {
         this.mAdapter = adapter;
         int rowCount = mAdapter.getRowCount();
         int colCount = mAdapter.getColumnCount();
@@ -48,7 +52,7 @@ class FormParam {
         }
     }
 
-    void initParams() {
+    void initParams(int viewHeight, int viewWidth) {
         isInitialized = true;
         int rowCount = mAdapter.getRowCount();
         int colCount = mAdapter.getColumnCount();
@@ -56,7 +60,7 @@ class FormParam {
         mColumnWidth = new float[colCount];
         mFormHeight = 0;
         mFormWidth = 0;
-        calculateFormSize();
+        calculateFormSize(viewHeight, viewWidth, rowCount, colCount);
         float lineWidth = mLinePaint.getStrokeWidth();
         float cellStartX = lineWidth;
         float cellStartY = lineWidth;
@@ -92,11 +96,11 @@ class FormParam {
         if (pressY < mRowHeight[0] + 2 * mLinePaint.getStrokeWidth()) {
             i = 0;
         } else {
-            while(sum < pressY + offsetY) {
+            while (sum < pressY + offsetY) {
                 sum += mRowHeight[++i] + lineWidth;
             }
         }
-        if (pressX< mColumnWidth[0] + 2 * mLinePaint.getStrokeWidth()) {
+        if (pressX < mColumnWidth[0] + 2 * mLinePaint.getStrokeWidth()) {
             j = 0;
         } else {
             sum = lineWidth;
@@ -136,20 +140,20 @@ class FormParam {
         }
     }
 
-    private void calculateFormSize() {
+    private void calculateFormSize(int viewHeight, int viewWidth, int rowCount, int colCount) {
         //calculate form size
-        for (int i = 0; i < mAdapter.getRowCount(); i++) {
-            mRowHeight[i] = calculateRowCellMaxHeight(i);
+        for (int i = 0; i < rowCount; i++) {
+            mRowHeight[i] = calculateRowCellMaxHeight(i, rowCount, viewHeight);
         }
-        for (int i = 0; i < mAdapter.getColumnCount(); i++) {
-            mColumnWidth[i] = calculateColumnCellMaxWidth(i);
+        for (int i = 0; i < colCount; i++) {
+            mColumnWidth[i] = calculateColumnCellMaxWidth(i, colCount, viewWidth);
         }
     }
 
-    private float calculateColumnCellMaxWidth(int columnNumber) {
+    private float calculateColumnCellMaxWidth(int columnNumber, int colCount, int viewWidth) {
         float maxWidth = 0;
         for (int i = 0; i < mAdapter.getRowCount(); i++) {
-            float cellWidth = mCells[i][columnNumber].calculateCellWidth();
+            float cellWidth = mCells[i][columnNumber].calculateCellWidth(colCount, viewWidth);
             if (cellWidth > maxWidth) {
                 maxWidth = cellWidth;
             }
@@ -157,10 +161,10 @@ class FormParam {
         return maxWidth;
     }
 
-    private float calculateRowCellMaxHeight(int rowNumber) {
+    private float calculateRowCellMaxHeight(int rowNumber, int rowCount, int viewHeight) {
         float maxHeight = 0;
         for (int j = 0; j < mAdapter.getColumnCount(); j++) {
-            float cellHeight = mCells[rowNumber][j].calculateCellHeight();
+            float cellHeight = mCells[rowNumber][j].calculateCellHeight(rowCount, viewHeight);
             maxHeight = cellHeight > maxHeight ? cellHeight : maxHeight;
         }
         return maxHeight;
