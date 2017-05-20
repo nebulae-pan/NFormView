@@ -42,12 +42,12 @@ public class StringFormCell extends FormCell {
     }
 
     @Override
-    public float calculateCellWidth(int colCount, int viewWidth) {
+    public float calculateCellWidth(int remainColCount, int remainViewWidth) {
         return mPaint.measureText(mContent) + 2 * mPadding;
     }
 
     @Override
-    public float calculateCellHeight(int rowCount, int viewHeight) {
+    public float calculateCellHeight(int remainRowCount, int remainViewHeight) {
         return mPaint.getFontMetrics().bottom - mPaint.getFontMetrics().top + 2 * mPadding;
     }
 }

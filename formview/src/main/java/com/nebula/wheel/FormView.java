@@ -5,6 +5,7 @@
 package com.nebula.wheel;
 
 import android.content.Context;
+import android.database.Observable;
 import android.graphics.Canvas;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
@@ -36,6 +37,7 @@ public class FormView extends View implements NestedScrollingChild {
     private int mContentScrollY;
 
     private FormParam mFormParam;
+    final private FormViewDataObserver mObserver = new FormViewDataObserver();
 
     /**
      * nested scroll about
@@ -60,7 +62,12 @@ public class FormView extends View implements NestedScrollingChild {
     }
 
     public void setAdapter(BaseAdapter adapter) {
+        if (mAdapter != null) {
+            mAdapter.unregisterAdapterDataObserver(mObserver);
+        }
         this.mAdapter = adapter;
+        mAdapter.registerAdapterDataObserver(mObserver);
+
         requestLayout();
     }
 
@@ -268,6 +275,7 @@ public class FormView extends View implements NestedScrollingChild {
     }
 
     abstract static public class BaseAdapter<T extends FormCell> {
+        private AdapterDataObservable mObservable = new AdapterDataObservable();
 
         abstract public int getRowCount();
 
@@ -276,5 +284,39 @@ public class FormView extends View implements NestedScrollingChild {
         abstract public T createCell(int rowNumber, int colNumber);
 
         abstract public void bindCell(T cell, int rowNumber, int colNumber);
+
+        public void registerAdapterDataObserver(AdapterDataObserver observer) {
+            mObservable.registerObserver(observer);
+        }
+
+        public void unregisterAdapterDataObserver(AdapterDataObserver observer) {
+            mObservable.unregisterObserver(observer);
+        }
+
+        public void notifyDataSetChanged() {
+            mObservable.notifyChanged();
+        }
+    }
+
+    private static class AdapterDataObservable extends Observable<AdapterDataObserver> {
+        public void notifyChanged() {
+            for(int i = mObservers.size() - 1; i >= 0;i--) {
+                mObservers.get(i).onChanged();
+            }
+        }
+    }
+
+
+    private class FormViewDataObserver extends AdapterDataObserver {
+        @Override
+        public void onChanged() {
+            requestLayout();
+        }
+    }
+
+    public static abstract class AdapterDataObserver{
+        public void onChanged() {
+
+        }
     }
 }

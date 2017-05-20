@@ -151,10 +151,6 @@ abstract public class FormCell {
         this.mLinePaint = paint;
     }
 
-    public float calculateCellHeight(int rowCount, int viewHeight) {
-        return 0;
-    }
-
     public boolean isClickable() {
         return mClickable;
     }
@@ -163,7 +159,11 @@ abstract public class FormCell {
         this.mClickable = clickable;
     }
 
-    public float calculateCellWidth(int colCount, int viewWidth) {
+    public float calculateCellWidth(int remainColCount, int remainViewWidth) {
+        return 0;
+    }
+
+    public float calculateCellHeight(int remainRowCount, int remainViewHeight) {
         return 0;
     }
 

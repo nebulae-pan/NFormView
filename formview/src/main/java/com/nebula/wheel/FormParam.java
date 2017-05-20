@@ -152,8 +152,12 @@ class FormParam {
 
     private float calculateColumnCellMaxWidth(int columnNumber, int colCount, int viewWidth) {
         float maxWidth = 0;
+        int remainViewWidth = viewWidth;
+        for (int i = 0; i < columnNumber; i++) {
+            remainViewWidth -= mColumnWidth[i];
+        }
         for (int i = 0; i < mAdapter.getRowCount(); i++) {
-            float cellWidth = mCells[i][columnNumber].calculateCellWidth(colCount, viewWidth);
+            float cellWidth = mCells[i][columnNumber].calculateCellWidth(colCount - columnNumber, remainViewWidth);
             if (cellWidth > maxWidth) {
                 maxWidth = cellWidth;
             }
@@ -163,8 +167,12 @@ class FormParam {
 
     private float calculateRowCellMaxHeight(int rowNumber, int rowCount, int viewHeight) {
         float maxHeight = 0;
+        int remainViewHeight = viewHeight;
+        for (int i = 0; i < rowNumber; i++) {
+            remainViewHeight -= mRowHeight[i];
+        }
         for (int j = 0; j < mAdapter.getColumnCount(); j++) {
-            float cellHeight = mCells[rowNumber][j].calculateCellHeight(rowCount, viewHeight);
+            float cellHeight = mCells[rowNumber][j].calculateCellHeight(rowCount - rowNumber, remainViewHeight);
             maxHeight = cellHeight > maxHeight ? cellHeight : maxHeight;
         }
         return maxHeight;
