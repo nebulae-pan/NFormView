@@ -5,7 +5,6 @@
 package com.nebula.wheel;
 
 import android.graphics.Paint;
-import android.util.Log;
 
 /**
  * Created by pan on 2017/4/17.
@@ -32,9 +31,14 @@ class FormParam {
 
     private Paint mLinePaint;
 
-    FormParam() {
+    private FormCell mPrePressCell;
+
+    private FormView mView;
+
+    FormParam(FormView formView) {
         mLinePaint = new Paint();
         mLinePaint.setStrokeWidth(1);
+        this.mView = formView;
     }
 
     void initCells(FormView.BaseAdapter adapter) {
@@ -67,7 +71,7 @@ class FormParam {
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 mCells[i][j].setParams(cellStartX, cellStartY, mRowHeight[i], mColumnWidth[j]);
-                mCells[i][j].setPosition(i, j);
+                mCells[i][j].setPosition(i, j, mView);
                 cellStartX += mColumnWidth[j] + lineWidth;
             }
             cellStartX = lineWidth;
@@ -81,6 +85,17 @@ class FormParam {
     void stateChange(float pressX, float pressY, float offsetX, float offsetY, int stateCode) {
         FormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
         cell.stateChangeTo(stateCode);
+        if (stateCode == FormCell.STATE_PRESS) {
+            mPrePressCell = cell;
+        }
+    }
+
+    void checkRemove(float pressX, float pressY, float offsetX, float offsetY) {
+        FormCell cell = getCellByCoordinate(pressX, pressY, offsetX, offsetY);
+        cell.stateChangeTo(FormCell.STATE_NORMAL);
+        if (mPrePressCell != null && !cell.equals(mPrePressCell)) {
+            mPrePressCell.stateChangeTo(FormCell.STATE_NORMAL);
+        }
     }
 
     void invokeClick(float pressX, float pressY, float offsetX, float offsetY) {
@@ -93,14 +108,14 @@ class FormParam {
         float lineWidth = mLinePaint.getStrokeWidth();
         float sum = lineWidth;
         int i = -1, j = -1;
-        if (pressY < mRowHeight[0] + 2 * mLinePaint.getStrokeWidth()) {
+        if (pressY < mRowHeight[0] + 2 * lineWidth) {
             i = 0;
         } else {
             while (sum < pressY + offsetY) {
                 sum += mRowHeight[++i] + lineWidth;
             }
         }
-        if (pressX < mColumnWidth[0] + 2 * mLinePaint.getStrokeWidth()) {
+        if (pressX < mColumnWidth[0] + 2 * lineWidth) {
             j = 0;
         } else {
             sum = lineWidth;
@@ -108,13 +123,11 @@ class FormParam {
                 sum += mColumnWidth[++j] + lineWidth;
             }
         }
-        Log.e("qwe", i + ":" + j);
         return getCellByPosition(i, j);
     }
 
 
     FormCell getCellByPosition(int rowNumber, int columnNumber) {
-//        checkInit();
         return mCells[rowNumber][columnNumber];
     }
 

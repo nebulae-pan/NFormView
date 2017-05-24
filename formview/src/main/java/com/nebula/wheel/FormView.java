@@ -7,6 +7,7 @@ package com.nebula.wheel;
 import android.content.Context;
 import android.database.Observable;
 import android.graphics.Canvas;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v4.view.NestedScrollingChild;
@@ -57,7 +58,7 @@ public class FormView extends View implements NestedScrollingChild {
     public FormView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setLongClickable(true);
-        mFormParam = new FormParam();
+        mFormParam = new FormParam(this);
         setNestedScrollingEnabled(true);
     }
 
@@ -71,9 +72,13 @@ public class FormView extends View implements NestedScrollingChild {
         requestLayout();
     }
 
+    public void setCellFrameLineWidth(float width) {
+        mFormParam.setCellFrameLineWidth(width);
+    }
+
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        Log.e("tag", "on layout called");
+//        Log.e("tag", "on layout called");
         super.onLayout(changed, left, top, right, bottom);
     }
 
@@ -212,11 +217,11 @@ public class FormView extends View implements NestedScrollingChild {
                 }
                 invalidate();
                 if (offsetX != 0 || offsetY != 0) {
-                    mFormParam.stateChange(mPressX, mPressY, mContentScrollX, mContentScrollY, FormCell.STATE_NORMAL);
+                    mFormParam.checkRemove(mPressX, mPressY, mContentScrollX, mContentScrollY);
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                Log.e("action up", event.getX() + ":" + mPressX + "|" + event.getY() + ":" + mPressY);
+//                Log.e("action up", event.getX() + ":" + mPressX + "|" + event.getY() + ":" + mPressY);
                 if (event.getX() == mPressX && event.getY() == mPressY) {
                     mFormParam.invokeClick(mPressX, mPressY, mContentScrollX, mContentScrollY);
                     invalidate();
@@ -274,6 +279,8 @@ public class FormView extends View implements NestedScrollingChild {
         return mScrollChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
+
+
     abstract static public class BaseAdapter<T extends FormCell> {
         private AdapterDataObservable mObservable = new AdapterDataObservable();
 
@@ -283,7 +290,7 @@ public class FormView extends View implements NestedScrollingChild {
 
         abstract public T createCell(int rowNumber, int colNumber);
 
-        abstract public void bindCell(T cell, int rowNumber, int colNumber);
+        abstract public void bindCell(@NonNull T cell, int rowNumber, int colNumber);
 
         public void registerAdapterDataObserver(AdapterDataObserver observer) {
             mObservable.registerObserver(observer);

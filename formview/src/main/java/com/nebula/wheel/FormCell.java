@@ -46,6 +46,8 @@ abstract public class FormCell {
 
     private OnCellClickListener mOnCellClickListener;
 
+    private FormView mParent;
+
     public FormCell(Context context) {
         this.mContext = context;
         mState = STATE_NORMAL;
@@ -76,6 +78,10 @@ abstract public class FormCell {
 
     public void setBackgroundColor(@ColorRes int resId) {
         mCellNormalBackground = ContextCompat.getColor(mContext, resId);
+        if (mParent == null) {
+            return;
+        }
+        mParent.invalidate((int)mStartX, (int)mStartY, (int)(mStartX + mWidth), (int)(mStartY + mHeight));
     }
 
     public void setDrawHorizontalLine(boolean isDraw) {
@@ -86,9 +92,10 @@ abstract public class FormCell {
         this.isDrawVerticalLine = isDraw;
     }
 
-    void setPosition(int row, int col) {
+    void setPosition(int row, int col, FormView view) {
         this.mRow = row;
         this.mCol = col;
+        this.mParent = view;
     }
 
     void drawCell(Canvas canvas) {
@@ -175,7 +182,24 @@ abstract public class FormCell {
         return mWidth;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof FormCell)) {
+            return false;
+        }
+        FormCell cell = (FormCell) obj;
+        return this.mRow == cell.mRow && this.mCol == cell.mCol;
+    }
+
     public interface OnCellClickListener {
         void onCellClick(FormCell formCell);
+    }
+
+    @Override
+    public String toString() {
+        return "FormCell{" +
+                "mRow=" + mRow +
+                ", mCol=" + mCol +
+                '}';
     }
 }
